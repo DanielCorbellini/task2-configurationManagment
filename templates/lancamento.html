@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lançamento</title>
+</head>
+
+<body>
+    <form action="/lancamento" method="post">
+        <label for="descricao">Descrição</label>
+        <input type="text" id="descricao" name="descricao">
+        <label for="data_lancamento">Data</label>
+        <input type="date" id="data_lancamento" name="data_lancamento">
+        <label for="valor">Valor</label>
+        <input type="number" id="valor" name="valor">
+        <label for="tipo_lancamento">Tipo</label>
+        <input type="text" id="tipo_lancamento" name="tipo_lancamento">
+        <label for="situacao">Situação</label>
+        <input type="text" id="situacao" name="situacao">
+        <label for="id_usuario">Usuário</label>
+        <input type="number" id="id_usuario" name="id_usuario">
+        <input type="submit" value="Salvar">
+    </form>
+
+    <h2>Lançamentos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descrição</th>
+                <th>Data</th>
+                <th>Valor</th>
+                <th>Tipo</th>
+                <th>Situação</th>
+                <th>Usuário</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lancamento in lancamentos %}
+            <tr>
+                <td>{{ lancamento.id }}</td>
+                <td>{{ lancamento.descricao }}</td>
+                <td>{{ lancamento.data_lancamento }}</td>
+                <td>{{ lancamento.valor }}</td>
+                <td>{{ lancamento.tipo_lancamento }}</td>
+                <td>{{ lancamento.situacao }}</td>
+                <td>{{ lancamento.id_usuario }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>
