@@ -1,23 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ConfigFinance | Entrar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <form action="/login" method="post">
-        <label for="username">Usuário</label>
-        <input type="text" id="username" name="username">
-        <label for="password">Senha</label>
-        <input type="password" id="password" name="password">
-        <input type="submit" value="Entrar">
-    </form>
-    {% if error %}
-    <p style="color: red;">{{ error }}</p>
-    {% endif %}
-</body>
+    <!-- Container que vai forçar o centro absoluto na tela unicamente para o login -->
+    <div style="display: flex; flex-direction: column; justify-content: center; min-height: 100vh; width: 100%;">
+        <div class="container auth-card card">
+            
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem;">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6366f1" />
+                            <stop offset="100%" stop-color="#a855f7" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <h1 style="margin-bottom: 0.5rem; font-size: 1.8rem;">Bem-vindo de volta</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                    Acesse o ConfigFinance para gerenciar seus lançamentos.
+                </p>
+            </div>
 
+            <form action="{{ url_for('login_post') }}" method="post">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <input type="text" id="username" name="username" placeholder="Seu nome de usuário" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; justify-content: space-between;" for="password">
+                        Senha
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Sua senha secreta" required>
+                </div>
+                
+                <input type="submit" style="margin-top: 1.5rem;" value="Acessar Painel">
+            </form>
+
+        {% if error %}
+        <div class="alert-error">
+            {{ error }}
+        </div>
+        {% endif %}
+    </div>
+</body>
 </html>

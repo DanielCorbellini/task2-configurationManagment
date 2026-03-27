@@ -1,60 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lançamento</title>
+    <title>ConfigFinance | Lançamentos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <form action="/lancamento" method="post">
-        <label for="descricao">Descrição</label>
-        <input type="text" id="descricao" name="descricao">
-        <label for="data_lancamento">Data</label>
-        <input type="date" id="data_lancamento" name="data_lancamento">
-        <label for="valor">Valor</label>
-        <input type="number" id="valor" name="valor">
-        <label for="tipo_lancamento">Tipo</label>
-        <input type="text" id="tipo_lancamento" name="tipo_lancamento">
-        <label for="situacao">Situação</label>
-        <input type="text" id="situacao" name="situacao">
-        <label for="id_usuario">Usuário</label>
-        <select name="id_usuario" id="id_usuario">
-            {% for usuario in usuarios %}
-            <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Salvar">
-    </form>
+    <header class="topbar">
+        <a href="/" class="topbar-logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#6366f1" />
+                        <stop offset="100%" stop-color="#a855f7" />
+                    </linearGradient>
+                </defs>
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            Config<span>Finance</span>
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+    </header>
 
-    <h2>Lançamentos</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Descrição</th>
-                <th>Data</th>
-                <th>Valor</th>
-                <th>Tipo</th>
-                <th>Situação</th>
-                <th>Usuário</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for lancamento in lancamentos %}
-            <tr>
-                <td>{{ lancamento.id }}</td>
-                <td>{{ lancamento.descricao }}</td>
-                <td>{{ lancamento.data_lancamento }}</td>
-                <td>{{ lancamento.valor }}</td>
-                <td>{{ lancamento.tipo_lancamento }}</td>
-                <td>{{ lancamento.situacao }}</td>
-                <td>{{ lancamento.id_usuario }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="dashboard-container">
+        <!-- Coluna Esquerda: Formulário -->
+        <aside class="card">
+            <h2>Novo Lançamento</h2>
+            <form action="{{ url_for('lancamento_post') }}" method="post">
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <input type="text" id="descricao" name="descricao" placeholder="Ex: Conta de Luz" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="data_lancamento">Data</label>
+                    <input type="date" id="data_lancamento" name="data_lancamento" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="valor">Valor (R$)</label>
+                    <input type="number" step="0.01" id="valor" name="valor" placeholder="0.00" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo_lancamento">Tipo</label>
+                    <select id="tipo_lancamento" name="tipo_lancamento" required>
+                        <option value="RECEITA">Receita</option>
+                        <option value="DESPESA">Despesa</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="situacao">Situação</label>
+                    <select id="situacao" name="situacao" required>
+                        <option value="EFETIVADO">Efetivado</option>
+                        <option value="PENDENTE">Pendente</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_usuario">Proprietário</label>
+                    <select name="id_usuario" id="id_usuario">
+                        <option value="">Selecione um usuário...</option>
+                        {% for usuario in usuarios %}
+                        <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <input type="submit" value="Salvar Lançamento">
+            </form>
+        </aside>
+
+        <!-- Coluna Direita: Tabela -->
+        <main class="card">
+            <h2>Últimos Lançamentos</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Tipo</th>
+                            <th>Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lancamento in lancamentos %}
+                        <tr>
+                            <td style="color: var(--text-secondary); white-space: nowrap;">{{ lancamento.data_lancamento }}</td>
+                            <td style="font-weight: 500;">{{ lancamento.descricao }}</td>
+                            <td>R$ {{ lancamento.valor }}</td>
+                            <td class="type {{ lancamento.tipo_lancamento | lower }}">{{ lancamento.tipo_lancamento }}</td>
+                            <td>
+                                <span class="badge {{ lancamento.situacao | lower }}">{{ lancamento.situacao }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not lancamentos %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                                Nenhum lançamento encontrado no banco de dados.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
 </body>
-
 </html>
