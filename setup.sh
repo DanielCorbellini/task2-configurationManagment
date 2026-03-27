@@ -55,15 +55,18 @@ fi
 DB_HOST=${DB_HOST:-localhost}
 DB_PORT=${DB_PORT:-5432}
 DB_USER=${DB_USER:-postgres}
+DB_NAME=${DB_NAME:-lancamentos}
 
-echo "⚙️ Importando banco de dados (dump.sql) via psql..."
+echo "⚙️ Importando banco de dados ($DB_NAME) via psql..."
 if [ "$DB_USER" = "postgres" ] && [ "$DB_HOST" = "localhost" ]; then
     # O postgres no Ubuntu geralmente usa 'peer authentication' e precisa rodar via sudo para o usuário padrão
     echo "🛠️ Detectado usuário postgres local. Executando via sudo..."
-    sudo -u postgres psql -d postgres -f dump.sql
+    sudo -u postgres psql -d postgres -c "CREATE DATABASE $DB_NAME;" 2>/dev/null || true
+    sudo -u postgres psql -d "$DB_NAME" -f dump.sql
 else
     export PGPASSWORD=$DB_PASSWORD
-    psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -f dump.sql
+    psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -c "CREATE DATABASE $DB_NAME;" 2>/dev/null || true
+    psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f dump.sql
 fi
 
 echo "✅ Setup concluído com sucesso!"
