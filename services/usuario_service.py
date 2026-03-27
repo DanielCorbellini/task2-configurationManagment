@@ -18,6 +18,22 @@ def buscar_usuario_por_login(login):
     finally:
         conn.close()
 
+def listar_usuarios():
+    """
+    Lista todos os usuários do banco de dados.
+    """
+    conn = get_db_connection()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            query = "SELECT id, nome FROM usuario"
+            cursor.execute(query)
+            return cursor.fetchall()
+    except Exception as e:
+        print(f"Erro ao listar usuários: {e}")
+        return []
+    finally:
+        conn.close()
+
 def autenticar_usuario(login, senha):
     """
     Verifica as credenciais do usuário.

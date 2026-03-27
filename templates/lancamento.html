@@ -20,7 +20,11 @@
         <label for="situacao">Situação</label>
         <input type="text" id="situacao" name="situacao">
         <label for="id_usuario">Usuário</label>
-        <input type="number" id="id_usuario" name="id_usuario">
+        <select name="id_usuario" id="id_usuario">
+            {% for usuario in usuarios %}
+            <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+            {% endfor %}
+        </select>
         <input type="submit" value="Salvar">
     </form>
 
