@@ -11,21 +11,29 @@ if ! command -v python3 &> /dev/null || ! command -v psql &> /dev/null; then
     echo "⚠️  Python3 ou PostgreSQL ausentes na sua máquina."
     echo "🔑 Solicitando permissão (sudo) para os instalar via instalador apt..."
     
-    sudo apt-get update
-    sudo apt-get install -y python3 python3-venv python3-pip postgresql postgresql-contrib
+    sudo apt update
+    sudo apt install -y python3 python3.12-venv python3-pip postgresql postgresql-contrib 
     
     # Inicia o serviço do postgresql caso esteja desligado
     sudo systemctl start postgresql || true
     
     echo "✅ Dependências do sistema instaladas!"
 else
-    echo "✅ Python e PostgreSQL já estão instalados no sistema."
+    echo "✅ Comandos Python e PostgreSQL encontrados."
 fi
 
 # 1. Criar o ambiente virtual
 if [ ! -d "venv" ]; then
     echo "📦 Criando ambiente virtual Python..."
-    python3 -m venv venv
+    # No Debian/Ubuntu, apenas o binário python3 não é suficiente para o venv, ele requer ensurepip do pacote adicional
+    if ! python3 -m venv venv; then
+        echo "⚠️  O módulo venv falhou. Instalando 'python3.12-venv' que está faltando no sistema..."
+        sudo apt update
+        sudo apt install -y python3.12-venv python3-venv
+        
+        echo "📦 Tentando recriar o ambiente virtual..."
+        python3 -m venv venv
+    fi
 fi
 
 echo "🔄 Ativando ambiente virtual..."
