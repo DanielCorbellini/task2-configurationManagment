@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Lançamentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 20px;
+        }
+        h1 {
+            color: #4f46e5;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .type-receita { color: #2ea043; font-weight: bold; }
+        .type-despesa { color: #f85149; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Extrato de Lançamentos</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Tipo</th>
+                <th>Situação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lancamento in lancamentos %}
+            <tr>
+                <td>{{ lancamento.data_lancamento }}</td>
+                <td>{{ lancamento.descricao }}</td>
+                <td>R$ {{ lancamento.valor }}</td>
+                <td class="{% if lancamento.tipo_lancamento == 'RECEITA' %}type-receita{% else %}type-despesa{% endif %}">
+                    {{ lancamento.tipo_lancamento }}
+                </td>
+                <td>{{ lancamento.situacao }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center;">Nenhum lançamento encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,8 @@
 <body>
     <header class="topbar">
         <a href="/" class="topbar-logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#6366f1" />
@@ -33,17 +35,17 @@
                     <label for="descricao">Descrição</label>
                     <input type="text" id="descricao" name="descricao" placeholder="Ex: Conta de Luz" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="data_lancamento">Data</label>
                     <input type="date" id="data_lancamento" name="data_lancamento" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="valor">Valor (R$)</label>
                     <input type="number" step="0.01" id="valor" name="valor" placeholder="0.00" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="tipo_lancamento">Tipo</label>
                     <select id="tipo_lancamento" name="tipo_lancamento" required>
@@ -51,7 +53,7 @@
                         <option value="DESPESA">Despesa</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="situacao">Situação</label>
                     <select id="situacao" name="situacao" required>
@@ -59,7 +61,7 @@
                         <option value="PENDENTE">Pendente</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="id_usuario">Proprietário</label>
                     <select name="id_usuario" id="id_usuario">
@@ -69,7 +71,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                
+
                 <input type="submit" value="Salvar Lançamento">
             </form>
         </aside>
@@ -77,6 +79,35 @@
         <!-- Coluna Direita: Tabela -->
         <main class="card">
             <h2>Últimos Lançamentos</h2>
+
+            <form method="GET" action="{{ url_for('lancamento') }}"
+                style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 150px;">
+                    <label for="filter_data"
+                        style="font-size: 0.8rem; margin-bottom: 0.25rem; display: block;">Data</label>
+                    <input type="date" id="filter_data" name="data" value="{{ request.args.get('data', '') }}"
+                        style="width: 100%;">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label for="filter_status"
+                        style="font-size: 0.8rem; margin-bottom: 0.25rem; display: block;">Situação</label>
+                    <select id="filter_status" name="situacao" style="width: 100%;">
+                        <option value="ALL">Todas as Situações</option>
+                        <option value="EFETIVADO" {% if request.args.get('situacao')=='EFETIVADO' %}selected{% endif %}>
+                            Efetivado</option>
+                        <option value="PENDENTE" {% if request.args.get('situacao')=='PENDENTE' %}selected{% endif %}>
+                            Pendente</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 0.5rem;">
+                    <button type="submit"
+                        style="padding: 0.875rem 1.5rem; background: var(--accent-gradient); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">Filtrar</button>
+                    <a href="{{ url_for('exportar_pdf', **request.args) }}"
+                        style="display: flex; align-items: center; padding: 0.875rem 1.5rem; background: var(--card-border); color: white; border: 1px solid var(--input-border); border-radius: 10px; cursor: pointer; font-weight: 600; text-decoration: none;">Exportar
+                        PDF</a>
+                </div>
+            </form>
+
             <div class="table-container">
                 <table>
                     <thead>
@@ -86,17 +117,26 @@
                             <th>Valor</th>
                             <th>Tipo</th>
                             <th>Situação</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for lancamento in lancamentos %}
                         <tr>
-                            <td style="color: var(--text-secondary); white-space: nowrap;">{{ lancamento.data_lancamento }}</td>
+                            <td style="color: var(--text-secondary); white-space: nowrap;">{{ lancamento.data_lancamento
+                                }}</td>
                             <td style="font-weight: 500;">{{ lancamento.descricao }}</td>
                             <td>R$ {{ lancamento.valor }}</td>
-                            <td class="type {{ lancamento.tipo_lancamento | lower }}">{{ lancamento.tipo_lancamento }}</td>
+                            <td class="type {{ lancamento.tipo_lancamento | lower }}">{{ lancamento.tipo_lancamento }}
+                            </td>
                             <td>
                                 <span class="badge {{ lancamento.situacao | lower }}">{{ lancamento.situacao }}</span>
+                            </td>
+                            <td style="display: flex; gap: 1rem;">
+                                <a href="{{ url_for('editar_lancamento', id=lancamento.id) }}"
+                                    class="btn-edit">Editar</a>
+                                <a href="{{ url_for('deletar_lancamento', id=lancamento.id) }}"
+                                    class="btn-delete">Excluir</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -113,4 +153,5 @@
         </main>
     </div>
 </body>
+
 </html>

@@ -1,32 +1,34 @@
 from psycopg2.extras import RealDictCursor
 from config.database import get_db_connection
 
-def listar_lancamentos(id_usuario=None):
+def listar_lancamentos(id_usuario=None, data_filtro=None, situacao_filtro=None):
     """
-    Acessa o banco de dados e lista os lançamentos.
-    Se id_usuario for fornecido, filtra apenas os lançamentos desse usuário.
+    Acessa o banco de dados e lista os lançamentos com filtros opcionais.
     """
     conn = get_db_connection()
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            if id_usuario:
-                query = '''
-                    SELECT id, descricao, data_lancamento, valor, tipo_lancamento, situacao, id_usuario
-                    FROM lancamento
-                    WHERE id_usuario = %s
-                    ORDER BY data_lancamento DESC
-                '''
-                cursor.execute(query, (id_usuario,))
-            else:
-                query = '''
-                    SELECT id, descricao, data_lancamento, valor, tipo_lancamento, situacao, id_usuario
-                    FROM lancamento
-                    ORDER BY data_lancamento DESC
-                '''
-                cursor.execute(query)
+            query = '''
+                SELECT id, descricao, data_lancamento, valor, tipo_lancamento, situacao, id_usuario
+                FROM lancamento
+                WHERE 1=1
+            '''
+            params = []
             
-            resultados = cursor.fetchall()
-            return resultados
+            if id_usuario:
+                query += ' AND id_usuario = %s'
+                params.append(id_usuario)
+            if data_filtro:
+                query += ' AND data_lancamento = %s'
+                params.append(data_filtro)
+            if situacao_filtro and situacao_filtro != 'ALL':
+                query += ' AND situacao = %s'
+                params.append(situacao_filtro)
+                
+            query += ' ORDER BY data_lancamento DESC'
+            
+            cursor.execute(query, tuple(params))
+            return cursor.fetchall()
     except Exception as e:
         print(f"Erro ao buscar lançamentos: {e}")
         return []

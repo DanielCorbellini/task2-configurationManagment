@@ -29,7 +29,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-image: 
+    background-image:
         radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
         radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15), transparent 25%);
     background-attachment: fixed;
@@ -56,7 +56,7 @@ body {
 
 .auth-card {
     max-width: 400px;
-    margin: 10vh auto;
+    margin: 0 auto;
 }
 
 .dashboard-container {
@@ -75,7 +75,8 @@ body {
     }
 }
 
-h1, h2 {
+h1,
+h2 {
     font-weight: 600;
     margin-bottom: 1.5rem;
     background: var(--accent-gradient);
@@ -133,6 +134,44 @@ h1, h2 {
     color: var(--danger);
 }
 
+.btn-edit {
+    padding: 0.5rem 1.25rem;
+    cursor: pointer;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border: 1px solid var(--card-border);
+    transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+    background: var(--accent-gradient);
+    border-color: var(--accent-gradient);
+    color: var(--text-primary);
+}
+
+.btn-delete {
+    cursor: pointer;
+    padding: 0.5rem 1.25rem;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border: 1px solid var(--card-border);
+    transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+    background: var(--danger-bg);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
 /* Forms */
 .form-group {
     margin-bottom: 1.25rem;
@@ -163,7 +202,8 @@ select {
     transition: all 0.3s ease;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
@@ -262,6 +302,7 @@ tbody tr:hover {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -269,9 +310,19 @@ tbody tr:hover {
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
 }
 
 /* Labels Badges */
