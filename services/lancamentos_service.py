@@ -54,3 +54,57 @@ def inserir_lancamento(descricao, data_lancamento, valor, tipo_lancamento, situa
         return False
     finally:
         conn.close()
+
+def buscar_lancamento_por_id(id):
+    """
+    Busca um lançamento específico pelo seu ID.
+    """
+    conn = get_db_connection()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            query = 'SELECT * FROM lancamento WHERE id = %s'
+            cursor.execute(query, (id,))
+            return cursor.fetchone()
+    except Exception as e:
+        print(f"Erro ao buscar lançamento por id: {e}")
+        return None
+    finally:
+        conn.close()
+
+def atualizar_lancamento(id, descricao, data_lancamento, valor, tipo_lancamento, situacao, id_usuario):
+    """
+    Atualiza os dados de um lançamento existente.
+    """
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            query = '''
+                UPDATE lancamento 
+                SET descricao = %s, data_lancamento = %s, valor = %s, tipo_lancamento = %s, situacao = %s, id_usuario = %s
+                WHERE id = %s
+            '''
+            cursor.execute(query, (descricao, data_lancamento, valor, tipo_lancamento, situacao, id_usuario, id))
+            conn.commit()
+            return True
+    except Exception as e:
+        print(f"Erro ao atualizar lançamento: {e}")
+        return False
+    finally:
+        conn.close()
+
+def deletar_lancamento_db(id):
+    """
+    Deleta um lançamento do banco de dados.
+    """
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            query = 'DELETE FROM lancamento WHERE id = %s'
+            cursor.execute(query, (id,))
+            conn.commit()
+            return True
+    except Exception as e:
+        print(f"Erro ao deletar lançamento: {e}")
+        return False
+    finally:
+        conn.close()

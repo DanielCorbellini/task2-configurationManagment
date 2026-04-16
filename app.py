@@ -3,7 +3,7 @@ from weasyprint import HTML
 import io
 from flask import send_file
 from flask import Flask, render_template, session, redirect, url_for, request
-from services.lancamentos_service import listar_lancamentos, inserir_lancamento
+from services.lancamentos_service import listar_lancamentos, inserir_lancamento, buscar_lancamento_por_id, atualizar_lancamento, deletar_lancamento_db
 from services.usuario_service import autenticar_usuario, listar_usuarios
 
 app = Flask(__name__)
@@ -80,9 +80,14 @@ def exportar_pdf():
     return send_file(pdf_io, download_name='lancamentos.pdf', as_attachment=True, mimetype='application/pdf')
 
 @app.route('/editar_lancamento/<int:id>', methods=['GET'])
-def editar_lancamento(id):
-    lancamento = listar_lancamentos(id)
-    return render_template('editar_lancamento.html', lancamento=lancamento)
+def editar_lancamento_route(id):
+    edit_lancamento = buscar_lancamento_por_id(id)
+    # Render the main dashboard but pass edit_lancamento so the modal can trigger
+    data_filtro = request.args.get('data')
+    situacao_filtro = request.args.get('situacao')
+    lancamentos = listar_lancamentos(id_usuario=session.get('user_id'), data_filtro=data_filtro, situacao_filtro=situacao_filtro)
+    usuarios = listar_usuarios()
+    return render_template('lancamento.html', lancamentos=lancamentos, usuarios=usuarios, edit_lancamento=edit_lancamento)
 
 @app.route('/editar_lancamento/<int:id>', methods=['POST'])
 def editar_lancamento_post(id):
@@ -93,12 +98,12 @@ def editar_lancamento_post(id):
     situacao = request.form.get('situacao')
     id_usuario = request.form.get('id_usuario') or session['user_id']
     
-    editar_lancamento(id, descricao, data_lancamento, valor, tipo_lancamento, situacao, id_usuario)
+    atualizar_lancamento(id, descricao, data_lancamento, valor, tipo_lancamento, situacao, id_usuario)
     return redirect(url_for('lancamento'))
 
 @app.route('/deletar_lancamento/<int:id>', methods=['GET'])
-def deletar_lancamento(id):
-    deletar_lancamento(id)
+def deletar_lancamento_route(id):
+    deletar_lancamento_db(id)
     return redirect(url_for('lancamento'))
 
 if __name__ == '__main__':

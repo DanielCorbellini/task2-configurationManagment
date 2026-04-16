@@ -133,10 +133,10 @@
                                 <span class="badge {{ lancamento.situacao | lower }}">{{ lancamento.situacao }}</span>
                             </td>
                             <td style="display: flex; gap: 1rem;">
-                                <a href="{{ url_for('editar_lancamento', id=lancamento.id) }}"
+                                <a href="{{ url_for('editar_lancamento_route', id=lancamento.id) }}"
                                     class="btn-edit">Editar</a>
-                                <a href="{{ url_for('deletar_lancamento', id=lancamento.id) }}"
-                                    class="btn-delete">Excluir</a>
+                                <a href="{{ url_for('deletar_lancamento_route', id=lancamento.id) }}" class="btn-delete"
+                                    onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -152,6 +152,72 @@
             </div>
         </main>
     </div>
+
+    {% if edit_lancamento %}
+    <div class="modal-overlay">
+        <aside class="card auth-card modal-card" style="box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="margin: 0; font-size: 1.5rem;">Editar Lançamento</h2>
+                <a href="{{ url_for('lancamento') }}"
+                    style="color: var(--text-secondary); text-decoration: none; font-size: 1.5rem; line-height: 1;">&times;</a>
+            </div>
+            <form action="{{ url_for('editar_lancamento_post', id=edit_lancamento.id) }}" method="post">
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <input type="text" id="descricao" name="descricao" value="{{ edit_lancamento.descricao }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="data_lancamento">Data</label>
+                    <input type="date" id="data_lancamento" name="data_lancamento"
+                        value="{{ edit_lancamento.data_lancamento }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="valor">Valor (R$)</label>
+                    <input type="number" step="0.01" id="valor" name="valor" value="{{ edit_lancamento.valor }}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo_lancamento">Tipo</label>
+                    <select id="tipo_lancamento" name="tipo_lancamento" required>
+                        <option value="RECEITA" {% if edit_lancamento.tipo_lancamento=='RECEITA' %}selected{% endif %}>
+                            Receita</option>
+                        <option value="DESPESA" {% if edit_lancamento.tipo_lancamento=='DESPESA' %}selected{% endif %}>
+                            Despesa</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="situacao">Situação</label>
+                    <select id="situacao" name="situacao" required>
+                        <option value="EFETIVADO" {% if edit_lancamento.situacao=='EFETIVADO' %}selected{% endif %}>
+                            Efetivado</option>
+                        <option value="PENDENTE" {% if edit_lancamento.situacao=='PENDENTE' %}selected{% endif %}>
+                            Pendente</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_usuario">Proprietário</label>
+                    <select name="id_usuario" id="id_usuario_edit">
+                        {% for usuario in usuarios %}
+                        <option disabled readonly value="{{ usuario.id }}" {% if edit_lancamento.id_usuario==usuario.id
+                            %}selected{% endif %}>{{ usuario.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <a href="{{ url_for('lancamento') }}"
+                        style="flex: 1; text-align: center; padding: 1rem; background: var(--card-border); color: white; text-decoration: none; border-radius: 10px; font-weight: 600;">Cancelar</a>
+                    <input type="submit" value="Salvar" style="flex: 1; margin: 0; padding: 1rem;">
+                </div>
+            </form>
+        </aside>
+    </div>
+    {% endif %}
 </body>
 
 </html>
