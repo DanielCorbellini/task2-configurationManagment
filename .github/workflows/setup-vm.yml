@@ -12,7 +12,9 @@ jobs:
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VM_HOST }}
-          key: ${{ secrets.VM_PASSPHRASE }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          passphrase: ${{ secrets.VM_PASSPHRASE }}
           script: |
             echo "teste"
             sudo apt-get update -y
