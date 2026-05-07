@@ -17,8 +17,8 @@ jobs:
             echo "teste"
             sudo apt-get update -y
 
-            sudo mkdir -p /CM/homolog
-            sudo mkdif -p /CM/prod
+            sudo mkdir -p /home/univates/CM/homolog
+            sudo mkdif -p /home/univates/CM/prod
 
             echo "Ajustando as permissões das pastas..."
             sudo chown -R $USER:$USER /opt/app
