@@ -1,0 +1,25 @@
+name: Configurar VM zerada
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-infraestrutura:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Conectar na VM e instalar dependências
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.VM_HOST }}
+          key: ${{ secrets.VM_PASSPHRASE }}
+          script: |
+            echo "teste"
+            sudo apt-get update -y
+
+            sudo mkdir -p /CM/homolog
+            sudo mkdif -p /CM/prod
+
+            echo "Ajustando as permissões das pastas..."
+            sudo chown -R $USER:$USER /opt/app
+            
