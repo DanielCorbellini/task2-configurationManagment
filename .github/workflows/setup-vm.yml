@@ -1,0 +1,38 @@
+name: Configurar VM zerada
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-infraestrutura:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Conectar na VM e instalar dependências
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASS }}
+          # key: ${{ secrets.VM_SSH_KEY }}
+          # passphrase: ${{ secrets.VM_PASSPHRASE }}
+          script: |
+            echo "Atualizando lista de pacotes..."
+            sudo apt-get update -y
+
+            echo "Instalando o Docker..."
+            # Utiliza o script oficial de instalação automatizada do Docker
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sudo sh get-docker.sh
+
+            echo "Instalando o plugin do Docker Compose..."
+            sudo apt-get install docker-compose-plugin -y
+
+            echo "Criando pastas dos ambientes HOMOLOD e PROD..."
+            sudo mkdir -p /home/univates/CM/homolog
+            sudo mkdir -p /home/univates/CM/prod
+
+            echo "Ajustando as permissões das pastas..."
+            sudo chown -R $USER:$USER /opt/app
+
+            echo "Provisionamento concluído! A VM está pronta para receber os ambientes!"
