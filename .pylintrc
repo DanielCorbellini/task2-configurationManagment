@@ -1,0 +1,6 @@
+; https://pylint.readthedocs.io/en/latest/user_guide/messages/convention/missing-function-docstring.html
+[MESSAGES CONTROL]
+disable=
+    C0114,
+    R0913,
+
