@@ -1,8 +1,7 @@
 name: Pipeline Homologação
 
 on:
-  push:
-    branches: [ homolog ]
+  workflow_dispatch:
 
 jobs:
   qualidade-codigo:
