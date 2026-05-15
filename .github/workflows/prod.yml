@@ -1,4 +1,4 @@
-name: Pipeline Prod
+name: Pipeline Produção
 
 on:
   workflow_dispatch:
@@ -21,38 +21,42 @@ jobs:
       - name: Instalar dependências
         run: |
           pip install -r requirements-dev.txt
-          pip install pytest-cov # Garante que o gerador de cobertura esteja presente
+          pip install pytest-cov
 
-      - name: Executar Testes e gerar XML
+      - name: D) Executar Testes em ambiente de Produção
         run: |
           pytest --junitxml=result.xml --cov=app --cov-report=term-missing
 
-      - name: Exibir estatísticas no PR
+      - name: Exibir estatísticas
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always() # Roda mesmo se os testes falharem para mostrar o que errou
+        if: always()
         with:
           files: result.xml
 
-  deploy-homolog:
+  deploy-producao:
     needs: [qualidade-codigo, testes] 
     runs-on: ubuntu-latest
     steps:
-      - name: Atualização do ambiente de Produção via SSH
+      - name: Atualização do ambiente de Produção
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASS }}
           script: |
-            # Entra na pasta criada no provisionamento (Requisito H)
-            cd /home/univates/CM/homolog
+            cd /home/univates/CM/prod
             
             if [ -d ".git" ]; then
-              echo "Atualizando repositório existente..."
+              echo "Atualizando ambiente de produção..."
+
+              git fetch origin
+              git switch main
               git pull origin main
             else
-              echo "Clonando pela primeira vez..."
+              echo "Clonando produção pela primeira vez..."
               git clone -b main https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git .
             fi
             
+            # Atualiza os containers de produção
+            # Mudar a porta depois
             docker compose up -d --build
