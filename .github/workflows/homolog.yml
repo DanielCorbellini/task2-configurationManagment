@@ -1,0 +1,59 @@
+name: Pipeline Homologação
+
+on:
+  workflow_dispatch:
+
+jobs:
+  qualidade-codigo:
+    uses: ./.github/workflows/pylint.yml
+
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements-dev.txt
+          pip install pytest-cov # Garante que o gerador de cobertura esteja presente
+
+      - name: Executar Testes e gerar XML
+        run: |
+          pytest --junitxml=result.xml --cov=app --cov-report=term-missing
+
+      - name: Exibir estatísticas no PR
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() # Roda mesmo se os testes falharem para mostrar o que errou
+        with:
+          files: result.xml
+
+  deploy-homolog:
+    # Ajuste aqui: o nome deve bater exatamente com os nomes dos jobs acima
+    needs: [qualidade-codigo, testes] 
+    runs-on: ubuntu-latest
+    steps:
+      - name: F) Atualização do ambiente de Homologação via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASS }}
+          script: |
+            # Entra na pasta criada no provisionamento (Requisito H)
+            cd /home/univates/CM/homolog
+            
+            if [ -d ".git" ]; then
+              echo "Atualizando repositório existente..."
+              git pull origin homolog
+            else
+              echo "Clonando pela primeira vez..."
+              git clone -b homolog https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git .
+            fi
+            
+            docker compose up -d --build

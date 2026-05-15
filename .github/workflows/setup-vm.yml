@@ -14,6 +14,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASS }}
+          use_insecure_cipher: true
           # key: ${{ secrets.VM_SSH_KEY }}
           # passphrase: ${{ secrets.VM_PASSPHRASE }}
           script: |
