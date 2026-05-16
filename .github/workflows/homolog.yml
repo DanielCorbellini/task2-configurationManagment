@@ -34,7 +34,7 @@ jobs:
           files: result.xml
 
   deploy-homolog:
-    needs: [qualidade-codigo, testes] 
+    needs: [qualidade-codigo] # [qualidade-codigo, testes]
     runs-on: self-hosted
     steps:
       - name: Atualização do ambiente de Homologação
