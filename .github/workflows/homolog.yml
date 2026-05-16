@@ -52,7 +52,7 @@ jobs:
             echo "Clonando pela primeira vez..."
             # Usar o GITHUB_TOKEN nativo evita que você precise criar e manter um Personal Access Token
             # git clone -b homolog https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git .
-            git clone -b homolog https://github.com/DanielCorbellini/task2-configurationManagment.git
+            git clone -b homolog https://github.com/DanielCorbellini/task2-configurationManagment.git .
           fi
           
           echo "Subindo os containers do ambiente de Homologação..."
