@@ -18,6 +18,9 @@ jobs:
           debug: true
           # key: ${{ secrets.VM_SSH_KEY }}
           # passphrase: ${{ secrets.VM_PASSPHRASE }}
+          sync: false  # Run script asynchronously to avoid timeout
+          timeout: 10m  # Increase timeout for longer operations
+          command_timeout: 10m
           script: |
             echo "Atualizando lista de pacotes..."
             sudo apt-get update -y
