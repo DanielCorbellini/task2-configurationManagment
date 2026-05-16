@@ -12,9 +12,10 @@ jobs:
         run: |
           set -x
           
-          echo "Atualizando lista de pacotes..."
+          echo "Atualizando lista de pacotes e instalando uidmap (necessário para Docker rootless)..."
           # A flag DEBIAN_FRONTEND=noninteractive previne que o apt-get trave pedindo confirmações visuais
           sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y uidmap
 
           echo "Instalando o Docker..."
           curl -fsSL https://get.docker.com -o get-docker.sh
@@ -23,9 +24,16 @@ jobs:
           echo "Instalando o plugin do Docker Compose..."
           sudo apt-get install docker-compose-plugin -y
 
+          echo "Configurando o Docker Rootless..."
+          # Desabilita o Docker root padrão para evitar conflitos na porta/socket
+          sudo systemctl disable --now docker.service docker.socket
+          
+          # Instala a versão rootless para o usuário atual do runner
+          dockerd-rootless-setuptool.sh install
+
           echo "Criando pastas dos ambientes HOMOLOG e PROD..."
-          sudo mkdir -p /home/univates/CM/homolog
-          sudo mkdir -p /home/univates/CM/prod
+          mkdir -p /home/univates/CM/homolog
+          mkdir -p /home/univates/CM/prod
 
           echo "Ajustando as permissões das pastas..."
           sudo chown -R $USER:$USER /home/univates/CM/homolog
