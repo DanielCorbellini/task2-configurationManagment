@@ -34,26 +34,27 @@ jobs:
           files: result.xml
 
   deploy-homolog:
-    # Ajuste aqui: o nome deve bater exatamente com os nomes dos jobs acima
     needs: [qualidade-codigo, testes] 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: F) Atualização do ambiente de Homologação via SSH
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USERNAME }}
-          password: ${{ secrets.VM_PASS }}
-          script: |
-            # Entra na pasta criada no provisionamento (Requisito H)
-            cd /home/univates/CM/homolog
-            
-            if [ -d ".git" ]; then
-              echo "Atualizando repositório existente..."
-              git pull origin homolog
-            else
-              echo "Clonando pela primeira vez..."
-              git clone -b homolog https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git .
-            fi
-            
-            docker compose up -d --build
+      - name: Atualização do ambiente de Homologação
+        run: |
+          # Entra na pasta criada no provisionamento
+          cd /home/univates/CM/homolog
+          
+          if [ -d ".git" ]; then
+            echo "Repositório detectado. Sincronizando com a branch homolog..."
+            # Baixa as atualizações do GitHub sem tentar mesclar ainda
+            git fetch origin homolog
+            # Força a pasta da VM a ficar EXATAMENTE igual à branch do GitHub, ignorando mudanças locais
+            git reset --hard origin/homolog
+          else
+            echo "Clonando pela primeira vez..."
+            # Usar o GITHUB_TOKEN nativo evita que você precise criar e manter um Personal Access Token
+            # git clone -b homolog https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git .
+            git clone -b homolog https://github.com/DanielCorbellini/task2-configurationManagment.git
+          fi
+          
+          echo "Subindo os containers do ambiente de Homologação..."
+          # Se o usuário não estiver no grupo docker, coloque "sudo docker compose" aqui
+          docker compose up -d --build
