@@ -1,0 +1,34 @@
+name: Configurar VM zerada 2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-infraestrutura:
+    runs-on: self-hosted
+
+    steps:
+      - name: Instalar dependências e configurar pastas
+        run: |
+          set -x
+          
+          echo "Atualizando lista de pacotes..."
+          # A flag DEBIAN_FRONTEND=noninteractive previne que o apt-get trave pedindo confirmações visuais
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+
+          echo "Instalando o Docker..."
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
+
+          echo "Instalando o plugin do Docker Compose..."
+          sudo apt-get install docker-compose-plugin -y
+
+          echo "Criando pastas dos ambientes HOMOLOG e PROD..."
+          sudo mkdir -p /home/univates/CM/homolog
+          sudo mkdir -p /home/univates/CM/prod
+
+          echo "Ajustando as permissões das pastas..."
+          sudo chown -R $USER:$USER /home/univates/CM/homolog
+          sudo chown -R $USER:$USER /home/univates/CM/prod
+
+          echo "Provisionamento concluído! A VM está pronta para receber os ambientes!"
